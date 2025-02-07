@@ -1,23 +1,11 @@
 # CHANGELOG.md
 
-## 2.0.0 (Unreleased)
+## 1.5.3 CURRENT (2025-02-08)
 ```
-  - Updated GUI
-  - Sounds on button clicks
-  - CTAB integration for messaging
-  - Mark targets with Laser
-  - Mark targets with IR Strobe
-  - Full airframe integration
-  - Updated pilot/crew uniforms
-  - BDA provided
-  - Aircraft checkin 
-  - Aircraft racetrack
-  - Aircraft loiter
-  - ISR integration
-  - UAVs added
-  - Active tracking of friendlies and enemies within XXX meters of player
-  - Configure TOT, TOS, and attack altitude
-  - Automatic reporting of fallen angel (Will tie in a pilot SERE script I am working on)
+  - RTB Fix: AI aircraft and helicopters now properly despawn after completing their missions instead of lingering in the air.
+  - Enhanced landing behavior: Ensures that returning aircraft reach their designated RTB point before despawning.
+  - Waypoint management improvements: Clears unnecessary waypoints, preventing erratic AI behavior.
+  - Debug logging improvements: Provides clearer troubleshooting information for mission makers.
 ```
   
 ## 1.0.5 (2023-22-10)
