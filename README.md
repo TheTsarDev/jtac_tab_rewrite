@@ -1,39 +1,41 @@
-# JTACTab: Advanced Support Module RE-WRITE
+# JTACTab: Advanced Support Module RE-WRITE (Experimental Branch)
 
-Remastered for Arma 2023 to carry on the work done by "LifeReapr".
-Original author is "Sushi", big thanks for making this all those years ago.
+Remastered for Arma 2023 to carry on the work done by "LifeReapr".  
+Original author is "Sushi"—big thanks for making this all those years ago.
 
-## Description
+## **Description**
 
-* Introducing the JTAC Tab Re-Write for ArmA 3 – your advanced JTAC system. This latest version allows you to efficiently request close air support from both fixed and rotary-wing aircraft, as well as set up rotary-wing transport missions complete with escort if necessary. Take control as the JTAC, specify the ideal IP (Initial Point)/BP (Battle Position), mark friendly locations, set your abort code and choose the munitions for your CAS mission. 
+The **Experimental Branch** of the **JTAC Tab Re-Write** introduces **persistent JTAC roles** and **improved respawn handling**, ensuring a more reliable and immersive experience on dedicated servers.
 
-* JTAC Tab mirrors real-world CAS and TRANS requests within the limitations of the engine. Just like in real-life scenarios, when you mark a target with smoke, you'll need to confirm the smoke color when the pilot requests it. While staying true to the spirit of the original mod, a few details have been thoughtfully adjusted, created, and are being developed for the best JTAC mod on the workshop.
+* **New in This Branch:**
+  - **JTAC role persistence:** Players assigned JTAC via the module will automatically regain access after death.
+  - **Improved respawn functionality:** JTACs keep their tablet and UAV terminal after respawn.
+  - **Prevention of unauthorized access:** Non-JTACs will not gain access upon respawn.
+  - **Fully automated integration:** No mission file edits required.
+  - **Optimized for dedicated servers:** Ensures stability and smooth functionality across sessions.
 
-* JTAC TAB is also easy to use for mission makers. There are 4 modules to put and synchronize on the map. You can just “place and play”, as well as adjust each CAS parameters for your own. You can customize your airframe selections to pre-defined choices or a custom class.
-
-
-* Features:
+* **Core Features:**
 ```
-∙ JTAC tablet (available if player have UAV Terminal in slot)
+∙ JTAC tablet (available if player has UAV Terminal in slot)
 ∙ IP/BP Selection
 ∙ Friendly Troop Position Identifier
-∙ Abort codes for abort requested CAS
-∙ Fixed and rotary wings CAS
-∙ JTAC can choose different types of munitions and attack approach (GBU, CBU, GAU, AGM and APK)
-∙ Different types of target marking (laser, smoke, IR Strobe)
-∙ Pilots recognize smoke color, JTAC operator must confirm smoke before CAS engages
-∙ Rotary wings can hover in BP, and JTAC operator decide of munitions type and time of engagement
-∙ Transport request for rotary wings
-∙ Taxi can be called with an armed escort if enemy is in the area
-∙ Day / Night marking target system
-∙ Live tracking of requested unit
-∙ Realistic request templates (within Arma limitations with AI)
+∙ Abort codes for CAS cancellation
+∙ Fixed and rotary-wing CAS
+∙ JTAC can choose munitions and attack approach (GBU, CBU, GAU, AGM, APK)
+∙ Multiple target marking methods (laser, smoke, IR Strobe)
+∙ Pilots confirm smoke color before engaging
+∙ Rotary-wing hover & controlled engagement
+∙ Transport requests for rotary-wing assets
+∙ Armed escort option for transport missions
+∙ Day/Night target marking system
+∙ Live tracking of requested units
+∙ Realistic request templates (AI-friendly within Arma limitations)
 ∙ EDEN Modules (JTAC Enable, CAS (FW), CAS (RW), Transport)
 ∙ JTAC operator field manual (PDF)
 ```
 
-* Placement
-You Must place down the modules in eden editor, and be carrying a UAV Terminal to get the addAction
+## **Module Placement**
+To use the system, you must place the **JTAC modules** in **Eden Editor** and be carrying a **UAV Terminal** to access the interface.
 
 ```
 ∙ JTAC Enable
@@ -42,35 +44,29 @@ You Must place down the modules in eden editor, and be carrying a UAV Terminal t
 ∙ Transport (Rotary-Wing)
 ```
 
-## Getting Started
+## **Getting Started**
 
-### Dependencies
-
+### **Dependencies**
 * Arma 3
-* PBO Manger, Mikero's tools, or BIS Arma 3 tools (To pack .pbo and or binarize)
-* Server/Client side mod (You must install on the server and use the key provided)
+* PBO Manager, Mikero's Tools, or BIS Arma 3 Tools (To pack .pbo and/or binarize)
+* Server/Client-side mod (You must install on the server and use the key provided)
 
-### Installing
+### **Installing**
+* Download all files and pack the `.pbo` as needed.
+* Place the `.pbo` inside your mod pack.
+* Upload the `.pbo` to your server (If MP).
+* Upload the key to your server (If MP).
 
-* Download all files and pack the .pbo however you see fit.
-* Place the .pbo inside your mod pack
-* Upload the .pbo to your server (If MP)
-* Upload the key to your server (If MP)
-
-## Development Team
-
+## **Development Team**
 ```
-* TsarDev 
-* Mooch
-
+* TsarDev  
+ 
 ```
 
-## Active Development
-* This mod is under active development, things will happen that may break something. Be patient and report all issues and errors. 
+## **Experimental Branch Development**
+This branch is **actively in testing** and may have bugs or issues. Please **report all errors** so we can refine and improve stability.
 
-
-## Acknowledgments
-
+## **Acknowledgments**
 * [Original Mod](https://steamcommunity.com/sharedfiles/filedetails/?id=1455591286)
-* [My workshop Release](https://steamcommunity.com/sharedfiles/filedetails/?id=3075802725)
+* [Workshop Release](https://steamcommunity.com/sharedfiles/filedetails/?id=3075802725)
 
