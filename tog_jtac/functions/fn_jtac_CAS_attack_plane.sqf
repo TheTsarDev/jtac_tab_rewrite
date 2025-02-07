@@ -1,8 +1,7 @@
 //////////////////////////////
-//	Advanced JTAC module	//
-//		bys SUSHI			//
-//	all rights reserverd	//
-//		www.armatog.com		//
+//      JTAC TAB RW         //
+//       by Tsardev         //
+//     version 1.5.3        //
 //////////////////////////////
 
 //fn_jtac_CAS_attack_plane
@@ -45,10 +44,10 @@ waitUntil {
 
 if (!_isAborted && _isAlive) then {
 	if (_ammoType == 0) then {
-		{ [_x,_tgt,200,"Bo_GBU12_LGB",_markType,"BOMB",_alterTgt] spawn TOG_fnc_jtac_CAS_launchGuided; } foreach units _grp;
+		{ [_x,_tgt,200,"Bo_GBU12_LGB",_markType,"GBU-12",_alterTgt] spawn TOG_fnc_jtac_CAS_launchGuided; } foreach units _grp;
 	};
 	if (_ammoType == 1) then {
-		{ [_x,_tgt,200,"Bo_GBU12_LGB",_markType,"CARPET",_alterTgt] spawn TOG_fnc_jtac_CAS_launchGuided; sleep 5; } foreach units _grp;
+		{ [_x,_tgt,200,"Mo_cluster_Bomb_01_F",_markType,"CBU",_alterTgt] spawn TOG_fnc_jtac_CAS_launchGuided; sleep 5; } foreach units _grp;
 	};
 	if (_ammoType == 2) then {
 		leader _grp setVariable["casDirect",true,false];

@@ -6,7 +6,7 @@
 //////////////////////////////
 
 class TOG_jtac_cas_dlg {
-	idd = 100000;
+	idd = 1000000;
 	movingEnable = true;
 	onLoad = "uiNamespace setVariable ['TOG_jtac_cas_dlg', (_this select 0)];";
 	onUnload = "['TOG_jtac_CAS_mapClick', 'onMapSingleClick'] call BIS_fnc_removeStackedEventHandler";

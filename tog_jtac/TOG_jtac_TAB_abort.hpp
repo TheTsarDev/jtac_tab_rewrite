@@ -215,7 +215,7 @@ class TOG_jtac_abort_dlg {
 			size = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.75);
   			text= "";
   			toolTip = "Transport";
-  				onMouseButtonClick = "closeDialog 0;  [] spawn TOG_fnc_jtac_showTab_Trans;";
+  			onMouseButtonClick = "closeDialog 0;  [] spawn TOG_fnc_jtac_showTab_Trans;";
   			colorDisabled[] ={1,1,1,0};
 			soundEnter[] = { "", 0, 1 };  //no sound
 			soundPush[] = { "", 0, 1 };

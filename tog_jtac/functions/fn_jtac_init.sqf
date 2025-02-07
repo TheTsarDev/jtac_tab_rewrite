@@ -1,8 +1,7 @@
 //////////////////////////////
-//	Advanced JTAC module	//
-//		bys SUSHI			//
-//	all rights reserverd	//
-//		www.armatog.com		//
+//      JTAC TAB RW         //
+//       by Tsardev         //
+//     version 1.5.3        //
 //////////////////////////////
 
 //fn_jtac_init
@@ -56,11 +55,19 @@ if (actionAdd) then {
 	actionAdd = false;
 };
 
+// Ensure all players assigned JTAC roles through the module are tracked
+if (isServer) then {
+    {
+        if (_x getVariable ["TOG_isJTAC", false]) then {
+            _x setVariable ["TOG_isJTAC", true, true];
+        };
+    } forEach allPlayers;
+};
+
 //Kończenie
 TOG_jtac_enable = true;
 
+// Debug message to confirm initialization
+diag_log "[JTAC] Initialization completed. All assigned JTACs tracked.";
+
 true
-
-
-
-

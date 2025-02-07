@@ -1,9 +1,9 @@
 //////////////////////////////
-//	Advanced JTAC module	//
-//		bys SUSHI			//
-//	all rights reserverd	//
-//		www.armatog.com		//
+//      JTAC TAB RW         //
+//       by Tsardev         //
+//     version 1.5.3        //
 //////////////////////////////
+
 _grp = (_this select 3) select 0;
 					_markType = (_this select 3) select 1;
 					_primaryTarget = (_this select 3) select 2;
@@ -59,7 +59,7 @@ _grp = (_this select 3) select 0;
 							  if(heliMaxAp < 1) then {[addAPMissile] call CBA_fnc_removePlayerAction;};
 							};
 
-							[_unitToFire,_tgt,200,_missile,_markType,"MISSILE",_alterTgt] spawn TOG_fnc_jtac_CAS_launchGuided;
+							[_unitToFire,_tgt,200,_missile,_markType,"APKWS",_alterTgt] spawn TOG_fnc_jtac_CAS_launchGuided;
 
 						} else {
 							if (_ammo == 0) then { [addATMissile] call CBA_fnc_removePlayerAction; } else {[addAPMissile] call CBA_fnc_removePlayerAction;};

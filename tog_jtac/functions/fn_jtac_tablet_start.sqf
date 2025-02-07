@@ -1,8 +1,7 @@
 //////////////////////////////
-//	Advanced JTAC module	//
-//		bys SUSHI			//
-//	all rights reserverd	//
-//		www.armatog.com		//
+//      JTAC TAB RW         //
+//       by Tsardev         //
+//     version 1.5.3        //
 //////////////////////////////
 
 //TOG_jtac_tablet_start.sqf
