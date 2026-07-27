@@ -73,6 +73,7 @@ if (_sequrity == 3) then {
 		_grp2 = [_vehSpawnPos, side TOG_jtac_operator,_spawnArrE,[[10,30],[40,20]]] call BIS_fnc_spawnGroup;
 		_grp2 setBehaviour "CARELESS";
 		_grp2 setCombatMode "BLUE";
+		leader _grp setVariable ["TOG_jtac_escortGrp", _grp2, true];
 
 		_wpE = _grp2 addWaypoint [_mrkPickPos,0];
 		_wpE setWaypointType "SAD";
@@ -217,10 +218,11 @@ if (!_isAborted && _isAlive ) then {
 
 
 
-			leader _grp  setVariable["waitForLoad",true,true];
+			leader _grp setVariable ["waitForLoad", true, true];
 
 			// czekaj az usiądzie
 			waitUntil {(getPosAtl leader _grp) select 2 < 5};
+
 			{
 				(vehicle _x) flyinheight 0;
 			} foreach units _grp;
@@ -228,21 +230,34 @@ if (!_isAborted && _isAlive ) then {
 			//otworz dzwi
 			if (_sequrity > 1) then {[_vehClass, _grp, 1] spawn TOG_fnc_jtac_openDoor;};
 
-			//dodaj akcje
-			[[_grp],"TOG_fnc_jtac_Trans_vehGo"] spawn BIS_fnc_MP;
+			// GO action on JTAC operator client
+			private _operator = TOG_jtac_operator;
+			if (isNull _operator) then { _operator = 0; };
+			[_grp] remoteExec ["TOG_fnc_jtac_Trans_vehGo", _operator, false];
 
 		};
 		//koniec ladowania
 
-		// czekaj na sygnal
-		waitUntil {
-			_isAborted = [_callsign] call TOG_fnc_jtac_Abort_check;
-			sleep 0.2;
-			_isAborted || !(leader _grp getVariable["waitForLoad",true])
+		// czekaj na sygnal GO (default false so we don't hang if landing was skipped)
+		if (_isAlive && !_isAborted && !isNull _tgt) then {
+			private _loadTimeout = time + 600;
+			waitUntil {
+				_isAborted = [_callsign] call TOG_fnc_jtac_Abort_check;
+				sleep 0.2;
+				_isAborted
+				|| !(leader _grp getVariable ["waitForLoad", false])
+				|| ({alive _x} count (units _grp) < 1)
+				|| (time > _loadTimeout)
+			};
+
+			if (time > _loadTimeout && {leader _grp getVariable ["waitForLoad", true]}) then {
+				hint format ["%1 departing — load timeout", _callsign];
+				[_grp] call TOG_fnc_jtac_Trans_vehGoRemoveAction;
+			};
 		};
 
 		// usun stary helipad
-		deleteVehicle _helipad;
+		if (!isNull _helipad) then { deleteVehicle _helipad; };
 
 		{
 			_x allowDamage true;
@@ -321,9 +336,13 @@ if (!_isAborted && _isAlive ) then {
 		//otworz dzwi
 		if (_sequrity > 1) then {[_vehClass, _grp, 1] spawn TOG_fnc_jtac_openDoor;};
 
-		//czekaj 40 sek
+		//czekaj 40 sek at destination, then depart automatically
 		_timeToWait = time + 40;
-		waitUntil {time > _timeToWait || {alive _X} count (units _grp) < 1};
+		waitUntil {
+			time > _timeToWait
+			|| ({alive _x} count (units _grp) < 1)
+			|| ([_callsign] call TOG_fnc_jtac_Abort_check)
+		};
 		{
 				(vehicle _x) flyinheight _altid;
 		} foreach units _grp;

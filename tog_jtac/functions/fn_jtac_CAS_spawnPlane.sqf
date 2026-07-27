@@ -115,19 +115,33 @@ if (_typeCas == 2 && _ammoType == 0) then {
 	} foreach units _grp;
 	heliMaxAt = _maxAt * _vehNumber;
 	heliMaxAp = _maxAp * _vehNumber;
-	{(vehicle _x) flyinheight _elev + 400; } foreach units _grp;
-	_wp setWaypointStatements ['true','_grp setFormDir _vehHeading'];
+	{(vehicle _x) flyinheight ((_elev + 400) max 50); } foreach units _grp;
 };
-
 
 //////////////////////////////////////Lot do IP
 while {_grpFlying && _isAlive && !_isAborted} do {
 	_isAborted = [_callsign] call TOG_fnc_jtac_Abort_check;
 	_isAlive = [_grp,_callsign,_grpType,_typeCas] call TOG_fnc_jtac_ifalive;
 	if ([leader _grp, waypointPosition _wp] call BIS_fnc_distance2D < _wpDist) then {
-	_grpFlying = false;
+		_grpFlying = false;
 	};
 	sleep 0.2;
+};
+
+// Hold rotary-wing at IP/BP before target marking and engagement
+if (_typeCas == 2 && _isAlive && !_isAborted) then {
+	while {(count (waypoints _grp)) > 0} do {
+		deleteWaypoint ((waypoints _grp) select 0);
+	};
+	_holdAlt = (_elev + 400) max 50;
+	{ (vehicle _x) flyInHeight _holdAlt; } forEach units _grp;
+	_wpHold = _grp addWaypoint [_mrkIpPos, 0];
+	_wpHold setWaypointType "LOITER";
+	_wpHold setWaypointLoiterRadius 150;
+	_wpHold setWaypointSpeed "LIMITED";
+	_wpHold setWaypointBehaviour "CARELESS";
+	_wpHold setWaypointCombatMode "BLUE";
+	if (_vehHeading != 0) then { _grp setFormDir _vehHeading; };
 };
 
 

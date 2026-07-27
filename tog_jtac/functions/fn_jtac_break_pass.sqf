@@ -6,8 +6,6 @@
 //////////////////////////////
 
 
-if (_isAlive && !_isAborted) then {
-
 _grp = _this select 0;
 _callsign = _this select 1;
 _grpType = _this select 2;
@@ -15,6 +13,11 @@ _typeCas = _this select 3;
 _maxPassNumber = _this select 4;
 _mrkIpPos = _this select 5;
 _mrkTgt = _this select 6;
+
+_isAlive = [_grp,_callsign,_grpType,_typeCas] call TOG_fnc_jtac_ifalive;
+_isAborted = [_callsign] call TOG_fnc_jtac_Abort_check;
+
+if (_isAlive && !_isAborted) then {
 
 
 isHit = false;

@@ -98,32 +98,46 @@ if (_markType == 1) then {
 } else {
 //////DYM
 
-	//funkcje dymu
+	// Classify each smoke object once by exact type — avoids green also counting as generic/purple
 	_countSmoke = {
-			_smokeWhite = (count ((markerpos _mrkTgt) nearObjects ["SmokeShell",_searchDist]));
-			_smokeYellow = (count ((markerpos _mrkTgt) nearObjects [smokeY,_searchDist]));
-			_smokeYellowGL = (count ((markerpos _mrkTgt) nearObjects [smokeYgl,_searchDist]));
-			_smokeGreen = (count ((markerpos _mrkTgt) nearObjects [smokeG,_searchDist]));
-			_smokeGreenGL = (count ((markerpos _mrkTgt) nearObjects [smokeGgl,_searchDist]));
-			_smokeRed = (count ((markerpos _mrkTgt) nearObjects [smokeR,_searchDist]));
-			_smokeRedGL = (count ((markerpos _mrkTgt) nearObjects [smokeRgl,_searchDist]));
-			_smokePurple= (count ((markerpos _mrkTgt) nearObjects [smokeP,_searchDist]));
-			_smokePurpleGL= (count ((markerpos _mrkTgt) nearObjects [smokePgl,_searchDist]));
-			_smokeOrange = (count ((markerpos _mrkTgt) nearObjects [smokeO,_searchDist]));
-			_smokeOrangeGL = (count ((markerpos _mrkTgt) nearObjects [smokeOgl,_searchDist]));
-			_smokeBlue = (count ((markerpos _mrkTgt) nearObjects [smokeB,_searchDist]));
-			_smokeBlueGL = (count ((markerpos _mrkTgt) nearObjects [smokeBgl,_searchDist]));
+		private _center = markerPos _mrkTgt;
+		private _allSmokes = nearestObjects [_center, ["SmokeShell", "SmokeShellVehicle", "G_40mm_Smoke", "Chemlight_yellow", "Chemlight_green", "Chemlight_red", "Chemlight_blue", "F_40mm_Yellow", "F_40mm_Green", "F_40mm_Red"], _searchDist];
+		private _smokeYellow = 0;
+		private _smokeGreen = 0;
+		private _smokeRed = 0;
+		private _smokePurple = 0;
+		private _smokeOrange = 0;
+		private _smokeBlue = 0;
 
-			_smokeYellow = _smokeYellow + _smokeYellowGL;
-			_smokeGreen = _smokeGreen + _smokeGreenGL;
-			_smokeRed = _smokeRed + _smokeRedGL;
-			_smokePurple = _smokePurple + _smokePurpleGL;
-			_smokeOrange = _smokeOrange + _smokeOrangeGL;
-			_smokeBlue = _smokeBlue + _smokeBlueGL;
+		{
+			private _type = typeOf _x;
+			if (_type == smokeY || _type == smokeYgl || _type isKindOf "SmokeShellYellow") then {
+				_smokeYellow = _smokeYellow + 1;
+			} else {
+				if (_type == smokeG || _type == smokeGgl || _type isKindOf "SmokeShellGreen") then {
+					_smokeGreen = _smokeGreen + 1;
+				} else {
+					if (_type == smokeR || _type == smokeRgl || _type isKindOf "SmokeShellRed") then {
+						_smokeRed = _smokeRed + 1;
+					} else {
+						if (smokeP != "" && {_type == smokeP || _type == smokePgl || _type isKindOf "SmokeShellPurple"}) then {
+							_smokePurple = _smokePurple + 1;
+						} else {
+							if (smokeO != "" && {_type == smokeO || _type == smokeOgl || _type isKindOf "SmokeShellOrange"}) then {
+								_smokeOrange = _smokeOrange + 1;
+							} else {
+								if (_type == smokeB || _type == smokeBgl || _type isKindOf "SmokeShellBlue") then {
+									_smokeBlue = _smokeBlue + 1;
+								};
+							};
+						};
+					};
+				};
+			};
+		} forEach _allSmokes;
 
-			_smokeShells = _smokeYellow + _smokeGreen +_smokeRed +_smokePurple +_smokeOrange + _smokeBlue;
-
-			[_smokeShells,_smokeYellow,_smokeGreen,_smokeRed,_smokePurple,_smokeOrange,_smokeBlue]
+		private _smokeShells = _smokeYellow + _smokeGreen + _smokeRed + _smokePurple + _smokeOrange + _smokeBlue;
+		[_smokeShells,_smokeYellow,_smokeGreen,_smokeRed,_smokePurple,_smokeOrange,_smokeBlue]
 	};
 
 	_confrimSmoke = {

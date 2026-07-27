@@ -10,7 +10,7 @@
 _typeCas = _this select 0;
 _elev = _this select 1;
 _grp = _this select 2;
-_mrkTgtPos = _this select 3;
+_mrkTgt = _this select 3;
 _callsign = _this select 4;
 _ammoType = _this select 5;
 _grpType = _this select 6;
