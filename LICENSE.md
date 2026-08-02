@@ -2,8 +2,6 @@
 
 ## JTAC Tab Re-Write
 
-Copyright (c) 2023–2026 TsarDev
-
 This mod is a remaster and rewrite of the original **JTAC Tab** mod by **Sushi**, with prior remaster work by **LifeReapr**.
 
 ---

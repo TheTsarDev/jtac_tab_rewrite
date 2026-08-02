@@ -34,21 +34,11 @@ if !(isClass _planeCfg) exitWith {
 	false
 };
 
-_weaponTypes = ["machinegun","missilelauncher"];
-_weapons = [];
-{
-	if (toLower ((_x call BIS_fnc_itemType) select 1) in _weaponTypes) then {
-		_modes = getArray (configFile >> "CfgWeapons" >> _x >> "modes");
-		if (count _modes > 0) then {
-			_mode = _modes select 0;
-			if (_mode == "this") then { _mode = _x; };
-			_weapons pushBack [_x, _mode];
-		};
-	};
-} forEach getArray (_planeCfg >> "weapons");
+_weapons = [_plane, _planeClass] call TOG_fnc_jtac_getDirectFireWeapons;
 
 if (count _weapons == 0) exitWith {
-	["No weapon of type 'MachineGun' found on '%1'", _planeClass] call BIS_fnc_error;
+	[format ["No direct-fire cannon found on '%1'. Check airframe has a gun or use GBU/CARPET.", _planeClass]] remoteExec ["hint", TOG_jtac_operator];
+	["No direct-fire weapon found on '%1'", _planeClass] call BIS_fnc_error;
 	leader (group _pilot) setVariable ["casDirect", false, false];
 	false
 };
@@ -56,8 +46,10 @@ if (count _weapons == 0) exitWith {
 _posASL = getPosASL _tgt;
 _terrainH = getTerrainHeightASL _posASL;
 _minAGL = 150;
-_dir = ((getMarkerPos _mrkTgt select 0) - (getMarkerPos _mrkIp select 0)) atan2 ((getMarkerPos _mrkTgt select 1) - (getMarkerPos _mrkIp select 1));
-_dis = [getMarkerPos _mrkTgt, getMarkerPos _mrkIp] call BIS_fnc_distance2D;
+_mrkTgtPos = if (typeName _mrkTgt == "ARRAY") then {_mrkTgt} else {getMarkerPos _mrkTgt};
+_mrkIpPos = if (typeName _mrkIp == "ARRAY") then {_mrkIp} else {getMarkerPos _mrkIp};
+_dir = ((_mrkTgtPos select 0) - (_mrkIpPos select 0)) atan2 ((_mrkTgtPos select 1) - (_mrkIpPos select 1));
+_dis = [_mrkTgtPos, _mrkIpPos] call BIS_fnc_distance2D;
 _dis = _dis max 500;
 _alt = (_dis * 0.15) max _minAGL;
 _alt = _alt min 800;
@@ -97,8 +89,9 @@ _plane setVectorDir _vectorDir;
 [_plane, -90 + atan (_dis / _alt), 0] call BIS_fnc_setPitchBank;
 _vectorUp = vectorUp _plane;
 
+private _keepWeapons = _weapons apply {_x select 0};
 {
-	if !(toLower ((_x call BIS_fnc_itemType) select 1) in (_weaponTypes + ["countermeasureslauncher"])) then {
+	if !(_x in _keepWeapons) then {
 		_plane removeWeapon _x;
 	};
 } forEach weapons _plane;
@@ -106,7 +99,7 @@ _vectorUp = vectorUp _plane;
 _fire = [] spawn { waitUntil {false}; };
 _fireNull = true;
 _time = time;
-_offset = if ({_x == "missilelauncher"} count _weaponTypes > 0) then {20} else {0};
+_offset = 0;
 _isAborted = [_vehCallsign] call TOG_fnc_jtac_Abort_check;
 
 if (_isAborted) exitWith {
@@ -168,7 +161,7 @@ waitUntil {
 		};
 	};
 
-	sleep 0.01;
+	sleep 0.05;
 	scriptDone _fire || isNull _tgt || isNull _plane || (time - _time > _duration + 10)
 };
 

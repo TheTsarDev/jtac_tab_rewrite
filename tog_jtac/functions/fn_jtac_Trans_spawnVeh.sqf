@@ -27,9 +27,16 @@ _markType = _this select 2;
 if (_markType > 0) then {_markType =_markType +1;}; // wyrównanie z markerami CAS
 _mrkPick = _this select 3;
 _mrkDest = _this select 4;
-_mrkPickPos = getMarkerPos _mrkPick;
-_mrkDestPos = getMarkerPos _mrkDest;
 _sequrity = _this select 5;
+_operator = _this param [6, objNull, [objNull]];
+_mrkPickPos = _this param [7, [], [[]]];
+_mrkDestPos = _this param [8, [], [[]]];
+
+if (!isNull _operator) then { TOG_jtac_operator = _operator; };
+if (_mrkPickPos isEqualTo []) then { _mrkPickPos = getMarkerPos _mrkPick; };
+if (_mrkDestPos isEqualTo []) then { _mrkDestPos = getMarkerPos _mrkDest; };
+
+_vehSpawnPos = [_vehSpawnPos, _vehClass, _custom] call TOG_fnc_jtac_getAirSpawnPos;
 
 //uzupełnianie zmiennych
 _spawnArr = [_vehClass,""];
@@ -94,13 +101,13 @@ _wp setWaypointFormation "WEDGE";
 //Ustawianie swiateł
 if (_sequrity > 0) then {
 	{
-		[_x] spawn {_plane = _this select 0; while {alive (vehicle _plane)} do {_plane action ["CollisionLightOff", (vehicle _plane)];};};
+		[_x] spawn {_plane = _this select 0; while {alive (vehicle _plane)} do {_plane action ["CollisionLightOff", (vehicle _plane)]; sleep 1;};};
 		_x allowfleeing 0;
 	} foreach units _grp;
 	/*{(vehicle _x) flyinheight _altid; } foreach units _grp;*/
 	if (!isNil "_grp2") then {
 		{
-			[_x] spawn {_plane = _this select 0; while {alive (vehicle _plane)} do {_plane action ["CollisionLightOff", (vehicle _plane)];};};
+			[_x] spawn {_plane = _this select 0; while {alive (vehicle _plane)} do {_plane action ["CollisionLightOff", (vehicle _plane)]; sleep 1;};};
 			_x allowfleeing 0;
 		} foreach units _grp2;
 	};
@@ -111,7 +118,7 @@ if (_sequrity < 2) then {[_vehClass, _grp, 1] spawn TOG_fnc_jtac_openDoor;};
 
 
 //TALK
-leader _grp sideChat format["%1 %2 %3 %4. %5",groupId (group player),(localize "STR_RADIO_THISIS"),_callsign,(localize 'STR_RADIO_OSCARMIKE'),(localize 'STR_RADIO_OUT')];
+leader _grp sideChat format["%1 %2 %3 %4. %5",[] call TOG_fnc_jtac_operatorGroupId,(localize "STR_RADIO_THISIS"),_callsign,(localize 'STR_RADIO_OSCARMIKE'),(localize 'STR_RADIO_OUT')];
 
 
 
@@ -122,7 +129,10 @@ if (!isNil "_grp2") then {
 			_grp2 = _this select 0;
 			_wpDist = _this select 1;
 			_wp = _this select 2;
-			waitUntil { [leader _grp2, waypointPosition _wp] call BIS_fnc_distance2D < _wpDist || {alive _X} count (units _grp2) < 1 };
+			waitUntil {
+				sleep 0.2;
+				[leader _grp2, waypointPosition _wp] call BIS_fnc_distance2D < _wpDist || {alive _X} count (units _grp2) < 1
+			};
 			_grp2 setBehaviour "COMBAT";
 			_grp2 setCombatMode "RED";
 		};
@@ -143,7 +153,7 @@ _waitForMark = {
 	if (_isAlive && !_isAborted) then {
 		if (_markType > 0) then {
 			//TALK
-			leader _grp sideChat format["%3 %5. %6",groupId (group player),(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_ENTERING'),(localize 'STR_RADIO_MARK_LZ'),(localize 'STR_RADIO_OVER')];
+			leader _grp sideChat format["%3 %5. %6",[] call TOG_fnc_jtac_operatorGroupId,(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_ENTERING'),(localize 'STR_RADIO_MARK_LZ'),(localize 'STR_RADIO_OVER')];
 
 			_targetMarked = [_markType,_callsign,_mrkTgt,_grp,_grpType] call TOG_fnc_jtac_Search_Mark; // czeka na oznaczenie i potwierdzenie
 			_tgt = _targetMarked select 0;
@@ -161,7 +171,7 @@ _waitForMark = {
 
 if (!_isAborted && _isAlive ) then {
 	//TALK
-	leader _grp sideChat format["%1 %2 %3 %4. %5",groupId (group player),(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_ENTERING'),(localize 'STR_RADIO_OVER')];
+	leader _grp sideChat format["%1 %2 %3 %4. %5",[] call TOG_fnc_jtac_operatorGroupId,(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_ENTERING'),(localize 'STR_RADIO_OVER')];
 	// DLA HELI
 	if (_typeCas == 2) then {
 
@@ -184,13 +194,16 @@ if (!_isAborted && _isAlive ) then {
 
 			//szukaj pozycji
 			_lz = [];
+			_lzTimeout = time + 30;
 			_lz = _center isFlatEmpty [(sizeOf _vehClass) / 2, 50, 0.7, (sizeOf _vehClass), 0, false, _tgt];
-			while {(count _lz) < 1} do {
+			while {(count _lz) < 1 && time < _lzTimeout} do {
 				_lz = _center isFlatEmpty [(sizeOf _vehClass) / 2, 200, 1, (sizeOf _vehClass), 0, false, _tgt];
+				sleep 0.5;
 			};
+			if (count _lz < 1) then { _lz = _center; };
 
 			//TALK
-			leader _grp sideChat format["%3 %4. %5",groupId (group player),(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_LANDING'),(localize 'STR_RADIO_OUT')];
+			leader _grp sideChat format["%3 %4. %5",[] call TOG_fnc_jtac_operatorGroupId,(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_LANDING'),(localize 'STR_RADIO_OUT')];
 
 			//tworzenie helipada
 			_helipad = createVehicle ["Land_HelipadEmpty_F",_lz,[],0,"NONE"];
@@ -199,18 +212,16 @@ if (!_isAborted && _isAlive ) then {
 			{ (vehicle _x) land "GET IN";
 				//dodatkowe sprawdzanie pozycji
 			waitUntil {
+				sleep 0.2;
 				_heli = (vehicle _x);
 				_landStatus = landResult _heli;
 
 				if (_landStatus == "NotFound") then {
 					_heli move [(getPos _heli select 0) + (random 30), (getPos _heli select 1) + (random 30), getPos _heli select 2];
+					_heli land "GET IN";
 				};
-				waitUntil {unitReady _heli};
-				_heli land "GET IN";
 
-				sleep 0.2;
-
-				_landStatus == "Found"
+				_landStatus == "Found" || !alive _heli
 			};
 
 
@@ -221,7 +232,10 @@ if (!_isAborted && _isAlive ) then {
 			leader _grp setVariable ["waitForLoad", true, true];
 
 			// czekaj az usiądzie
-			waitUntil {(getPosAtl leader _grp) select 2 < 5};
+			waitUntil {
+				sleep 0.2;
+				(getPosAtl leader _grp) select 2 < 5 || {alive _X} count (units _grp) < 1
+			};
 
 			{
 				(vehicle _x) flyinheight 0;
@@ -288,18 +302,24 @@ if (!_isAborted && _isAlive ) then {
 		};
 
 		//czekaj na dotarcie
-		waitUntil {[leader _grp, waypointPosition _wp] call BIS_fnc_distance2D < 350 || {alive _X} count (units _grp) < 1};
+		waitUntil {
+			sleep 0.2;
+			[leader _grp, waypointPosition _wp] call BIS_fnc_distance2D < 350 || {alive _X} count (units _grp) < 1
+		};
 
 		//szukaj pozycji
 		_center = waypointPosition _wp;
 		_center = [_center select 0, _center select 1, 0];
 		_lz = [];
 		_max_distance = (sizeOf _vehClass);
+		_lzTimeout = time + 30;
 
 		_lz = _center isFlatEmpty [(sizeOf _vehClass) / 2, 50, 0.7, (sizeOf _vehClass), 0, false, (vehicle leader _grp)];
-		while {(count _lz) < 1} do {
+		while {(count _lz) < 1 && time < _lzTimeout} do {
 			_lz = _center isFlatEmpty [(sizeOf _vehClass) / 2, 200, 1, (sizeOf _vehClass), 0, false, (vehicle leader _grp)];
+			sleep 0.5;
 		};
+		if (count _lz < 1) then { _lz = _center; };
 
 
 		//tworzenie helipada
@@ -310,25 +330,25 @@ if (!_isAborted && _isAlive ) then {
 		{ (vehicle _x) land "GET IN";
 
 			waitUntil {
+				sleep 0.2;
 				_heli = (vehicle _x);
 				_landStatus = landResult _heli;
 
 				if (_landStatus == "NotFound") then {
 					_heli move [(getPos _heli select 0) + (random 30), (getPos _heli select 1) + (random 30), getPos _heli select 2];
-
+					_heli land "GET IN";
 				};
-				waitUntil {unitReady _heli};
-				_heli land "GET IN";
 
-				sleep 0.2;
-
-				_landStatus == "Found"
+				_landStatus == "Found" || !alive _heli
 			};
 		} foreach units _grp;
 
 
 		// czekaj az usiądzie
-		waitUntil {(getPosAtl leader _grp) select 2 < 5};
+		waitUntil {
+			sleep 0.2;
+			(getPosAtl leader _grp) select 2 < 5 || {alive _X} count (units _grp) < 1
+		};
 		{
 				(vehicle _x) flyinheight 0;
 		} foreach units _grp;
@@ -339,6 +359,7 @@ if (!_isAborted && _isAlive ) then {
 		//czekaj 40 sek at destination, then depart automatically
 		_timeToWait = time + 40;
 		waitUntil {
+			sleep 0.2;
 			time > _timeToWait
 			|| ({alive _x} count (units _grp) < 1)
 			|| ([_callsign] call TOG_fnc_jtac_Abort_check)

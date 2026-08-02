@@ -24,7 +24,7 @@ _isAlive = true;
 _isAborted = false;
 
 // Hold at BP/IP while JTAC selects munitions or confirms target
-_holdPos = getMarkerPos _mrkIp;
+_holdPos = if (typeName _mrkIp == "ARRAY") then {_mrkIp} else {getMarkerPos _mrkIp};
 _holdAlt = (_elev + 400) max 50;
 
 while {(count (waypoints _grp)) > 0} do {
@@ -43,36 +43,16 @@ _wpHold setWaypointBehaviour "CARELESS";
 _wpHold setWaypointCombatMode "BLUE";
 
 if (_ammoType == 0) then {
-	if (heliMaxAt > 0) then {
-		addATMissile = [[
-			"<t color='#c48214'>" + (localize 'STR_CHOSE_AT') + "</t>",
-			TOG_fnc_jtac_CAS_launchMissile,
-			[_grp,_markType,_mrkTgt,0,_alterTgt,_vehClass],
-			1
-		]] call CBA_fnc_addPlayerAction;
-	};
-	if (heliMaxAp > 0) then {
-		addAPMissile = [[
-			"<t color='#c48214'>" + (localize 'STR_CHOSE_AP') + "</t>",
-			TOG_fnc_jtac_CAS_launchMissile,
-			[_grp,_markType,_mrkTgt,1,_alterTgt,_vehClass],
-			1
-		]] call CBA_fnc_addPlayerAction;
-	};
+	["TOG_fnc_jtac_client_addHeliMissileActions", [_grp, _markType, _mrkTgt, _alterTgt, _vehClass, heliMaxAt, heliMaxAp]] call TOG_fnc_jtac_execOnOperator;
 
 	waitUntil {
 		_isAborted = [_callsign] call TOG_fnc_jtac_Abort_check;
 		_isAlive = [_grp,_callsign,_grpType,_typeCas] call TOG_fnc_jtac_ifalive;
 		sleep 0.5;
-		(heliMaxAt < 1 && heliMaxAp < 1) || !_isAlive || _isAborted || (!alive TOG_jtac_operator) || (!isPlayer TOG_jtac_operator)
+		(heliMaxAt < 1 && heliMaxAp < 1) || !_isAlive || _isAborted || (!isNull TOG_jtac_operator && {(!alive TOG_jtac_operator) || (!isPlayer TOG_jtac_operator)})
 	};
 
-	_misslArr = [];
-	if (!isNil "addATMissile") then {_misslArr pushBack addATMissile;};
-	if (!isNil "addAPMissile") then {_misslArr pushBack addAPMissile;};
-	{
-		if (!isNil "_x") then { [_x] call CBA_fnc_removePlayerAction; };
-	} forEach _misslArr;
+	["TOG_fnc_jtac_client_removeActions", ["heliMissile"]] call TOG_fnc_jtac_execOnOperator;
 };
 
 if (_ammoType == 1) then {

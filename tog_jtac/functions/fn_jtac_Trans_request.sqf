@@ -20,6 +20,7 @@ _len = count (toArray _abortCodeVal);
 _finalArr = [];
 _arr = [];
 _maxTransNumber = 0;
+_canSpawn = false;
 
 //ustalanie tablicy
 _arr = TOG_jtac_Trans_Heli_arr;
@@ -28,14 +29,15 @@ _arr = TOG_jtac_Trans_Heli_arr;
 {
 	_callsign = _x select 1;
 	if (_callsign == TOG_jtac_Trans_callsign) then {
-		//odejmowanie ilosci CAS
 		_maxTransNumber = _x select 3;
-		if (_maxTransNumber < TOG_jtac_Trans_vehNum) exitWith {
+		if (_maxTransNumber >= TOG_jtac_Trans_vehNum) then {
+			_newMaxTransNumber = _maxTransNumber - TOG_jtac_Trans_vehNum;
+			_x set [3, _newMaxTransNumber];
+			_finalArr = _x;
+			_canSpawn = true;
+		} else {
 			hint (localize "STR_INFO_MAXCAS_REACHED");
 		};
-		_newMaxTransNumber = _maxTransNumber - TOG_jtac_Trans_vehNum;
-		_x set [3, _newMaxTransNumber];
-		_finalArr = _x;
 	};
 } foreach _arr;
 
@@ -44,7 +46,9 @@ if (TOG_jtac_Trans_type == 1) then {} else {
 	if (TOG_jtac_Trans_type == 2) then {publicVariable "TOG_jtac_Trans_Heli_arr";};
 };
 
-if (_maxTransNumber > 0) then {
+if (_canSpawn) then {
+	_mrkPickPos = getMarkerPos TOG_jtac_Trans_mrkPick;
+	_mrkDestPos = getMarkerPos TOG_jtac_Trans_mrkDest;
 	//dodawanie do tablicy requested
 	TOG_jtac_Requested_arr = TOG_jtac_Requested_arr +[TOG_jtac_Trans_callsign];
 	publicVariable "TOG_jtac_Requested_arr";
@@ -57,7 +61,12 @@ if (_maxTransNumber > 0) then {
 	};
 
 	//Tworzenie
-	[_finalArr,TOG_jtac_Trans_vehNum,TOG_jtac_Trans_markType,TOG_jtac_Trans_mrkPick,TOG_jtac_Trans_mrkDest,TOG_jtac_Trans_sequrity] spawn TOG_fnc_jtac_Trans_spawnVeh;
+	_spawnArgs = [_finalArr,TOG_jtac_Trans_vehNum,TOG_jtac_Trans_markType,TOG_jtac_Trans_mrkPick,TOG_jtac_Trans_mrkDest,TOG_jtac_Trans_sequrity, player, _mrkPickPos, _mrkDestPos];
+	if (isDedicated) then {
+		_spawnArgs remoteExec ["TOG_fnc_jtac_Trans_spawnVeh", 2];
+	} else {
+		_spawnArgs spawn TOG_fnc_jtac_Trans_spawnVeh;
+	};
 	hint (localize "STR_INFO_REQESTSEND");
 };
 

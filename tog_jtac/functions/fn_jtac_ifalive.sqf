@@ -33,7 +33,7 @@ if (_alive > 0) then {
 	true
 } else {
 	//TALK
-	leader _grp sideChat format["%1 %2 %3 %4 [...]",groupId (group player),(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_TAKINGFIRE')];
+	leader _grp sideChat format["%1 %2 %3 %4 [...]",[] call TOG_fnc_jtac_operatorGroupId,(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_TAKINGFIRE')];
 	{
 		_mrk_name = _callsign + _x;
 		_distMrkName = _mrk_name + "dist";

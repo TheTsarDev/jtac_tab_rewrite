@@ -24,5 +24,6 @@ if (count TOG_jtac_AbortCodes_arr < 1) exitWith {hint "Bad abort code"};
 
 if (_abortCodeVal == _abortCodeOrig) then {
 	TOG_jtac_Aborted_arr = TOG_jtac_Aborted_arr + [[_callsign, _abortCodeVal]];
+	publicVariable "TOG_jtac_Aborted_arr";
 	hint "Abort request send";
 } else {hint "Bad abort code";};

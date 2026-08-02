@@ -8,8 +8,8 @@
 //fn_jtac_init_heli
 
 if (isServer) then {
-	waitUntil {!isNil "TOG_jtac_enable"};
-	waitUntil{TOG_jtac_enable && !TOG_jtac_CAS_Heli_arr_busy};
+	waitUntil { sleep 0.1; !isNil "TOG_jtac_enable" };
+	waitUntil { sleep 0.1; TOG_jtac_enable && !TOG_jtac_CAS_Heli_arr_busy };
 	TOG_jtac_CAS_Heli_arr_busy = true;
 };
 

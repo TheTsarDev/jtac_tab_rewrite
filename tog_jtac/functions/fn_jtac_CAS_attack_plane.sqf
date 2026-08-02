@@ -53,7 +53,10 @@ if (!_isAborted && _isAlive) then {
 	if (_ammoType == 2) then {
 		leader _grp setVariable["casDirect",true,false];
 		{ [_x, _tgt, _mrkTgt, _mrkIp, _vehClass,_alterTgt,_callsign] spawn TOG_fnc_jtac_CAS_direct; sleep 8; } foreach units _grp;
-		waitUntil {!(leader _grp getVariable["casDirect",true]) || {alive _X} count (units _grp) < 1};
+		waitUntil {
+			sleep 0.2;
+			!(leader _grp getVariable ["casDirect", true]) || {alive _X} count (units _grp) < 1
+		};
 		{
 			_x enableAi "MOVE";
 			(vehicle _x) enableAi "MOVE";
@@ -61,6 +64,11 @@ if (!_isAborted && _isAlive) then {
 	};
 };
 
-if (_ammoType < 0) then { waitUntil {[leader _grp, waypointPosition _wp1] call BIS_fnc_distance2D > _fireDist || {alive _X} count (units _grp) < 1}; };
+if (_ammoType < 0) then {
+	waitUntil {
+		sleep 0.2;
+		[leader _grp, waypointPosition _wp1] call BIS_fnc_distance2D > _fireDist || {alive _X} count (units _grp) < 1
+	};
+};
 
 [_isAlive, _isAborted]

@@ -17,7 +17,8 @@ TOG_jtac_Trans_selectPos = 0; //0- PU, 1- DEST
 TOG_jtac_Trans_vehNum = 1;
 TOG_jtac_Trans_sequrity = 0; //0 -safe , 1-Possibly, 2-Eenemy, 3-escort
 TOG_jtac_Trans_markType = 0; //0 - none, 1 - dym
-TOG_jtac_CAS_mrkIp = 0;
+TOG_jtac_Trans_mrkPick = nil;
+TOG_jtac_Trans_mrkDest = nil;
 
 //Sprawdzanie czy noc
 _date = date;

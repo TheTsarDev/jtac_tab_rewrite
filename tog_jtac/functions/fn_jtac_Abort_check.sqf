@@ -14,6 +14,7 @@ _isAborted = false;
 	if (_x select 0 == _callsign) then {
 		_isAborted = true;
 		TOG_jtac_Aborted_arr = TOG_jtac_Aborted_arr - [_x];
+		publicVariable "TOG_jtac_Aborted_arr";
 	};
 } foreach TOG_jtac_Aborted_arr;
 

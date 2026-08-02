@@ -30,18 +30,23 @@ _vehNumber = _this select 1;
 _markType = _this select 2;
 _mrkTgt = _this select 3;
 _mrkIp = _this select 4;
-_mrkIpPos = getMarkerPos _mrkIp;
-_mrkTgtPos = getMarkerPos _mrkTgt;
+_elev = _this select 7;
+_operator = _this param [8, objNull, [objNull]];
+_mrkTgtPos = _this param [9, [], [[]]];
+_mrkIpPos = _this param [10, [], [[]]];
+
+if (!isNull _operator) then { TOG_jtac_operator = _operator; };
+if (_mrkTgtPos isEqualTo []) then { _mrkTgtPos = getMarkerPos _mrkTgt; };
+if (_mrkIpPos isEqualTo []) then { _mrkIpPos = getMarkerPos _mrkIp; };
+
 _ammoType = _this select 5;
 _vehHeading = _this select 6;
-_elev = _this select 7;
-
 
 //uzupełnianie zmiennych
 _tgt = objNull;
 _spawnArr = [_vehClass,""];
 if (_vehNumber > 1) then { _spawnArr = [_vehClass, _vehClass]; };
-if (_custom) then { _vehSpawnPos = [_vehSpawnPos select 0, _vehSpawnPos select 1, 3000]; };
+_vehSpawnPos = [_vehSpawnPos, _vehClass, _custom] call TOG_fnc_jtac_getAirSpawnPos;
 
 _grpFlying = true;
 _isAborted = false;
@@ -50,10 +55,14 @@ _wpDist = 1500;
 _requestType = 1;
 _grpType = _requestType;
 if (_typeCas == 2) then {_wpDist = 200;};
-_alterTgt = createAgent ["Logic", [(_mrkTgtPos select 0) + (random 10), (_mrkTgtPos select 1) + (random 10),  0], [] , 0 , "CAN_COLLIDE"];
+_alterTgt = if (_markType == 1) then {
+	createAgent ["Logic", _mrkTgtPos, [], 0, "CAN_COLLIDE"]
+} else {
+	createAgent ["Logic", [(_mrkTgtPos select 0) + (random 10) - 10, (_mrkTgtPos select 1) + (random 10) - 10, 0], [], 0, "CAN_COLLIDE"]
+};
 _fireDist = 250;
-if (_typeCas == 1 && _ammoType == 2) then { _fireDist = 3000;} else {
-	if (_markType == 1) then { _fireDist = 350; };
+if (_typeCas == 1 && _ammoType == 2) then { _fireDist = 3000; } else {
+	if (_markType == 1) then { _fireDist = 150; };
 };
 
 
@@ -72,7 +81,7 @@ _grp setGroupId [_callsign];
 _grp setBehaviour "CARELESS";
 _grp setCombatMode "BLUE";
 {
-		[_x] spawn {_plane = _this select 0; while {alive (vehicle _plane)} do {_plane action ["CollisionLightOff", (vehicle _plane)];};};
+		[_x] spawn {_plane = _this select 0; while {alive (vehicle _plane)} do {_plane action ["CollisionLightOff", (vehicle _plane)]; sleep 1;};};
 		_x allowfleeing 0;
 } foreach units _grp;
 //dodanie do tablicy all groups
@@ -104,7 +113,7 @@ if (_typeCas == 1 && _ammoType == 2) then {
 };
 
 //TALK
-leader _grp sideChat format["%1 %2 %3 %4. %5",groupId (group player),(localize "STR_RADIO_THISIS"),_callsign,(localize 'STR_RADIO_OSCARMIKE'),(localize 'STR_RADIO_OUT')];
+leader _grp sideChat format["%1 %2 %3 %4. %5",[] call TOG_fnc_jtac_operatorGroupId,(localize "STR_RADIO_THISIS"),_callsign,(localize 'STR_RADIO_OSCARMIKE'),(localize 'STR_RADIO_OUT')];
 ////Ustawienie WP
 
 ////Dodanie amunicji jesli heli
@@ -150,9 +159,9 @@ _waitForMark = {
 	if (_isAlive && !_isAborted) then {
 		if (_markType > 0) then {
 			//TALK
-			leader _grp sideChat format["%3 %5. %6",groupId (group player),(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_ENTERING'),(localize 'STR_RADIO_MARK'),(localize 'STR_RADIO_OVER')];
+			leader _grp sideChat format["%3 %5. %6",[] call TOG_fnc_jtac_operatorGroupId,(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_ENTERING'),(localize 'STR_RADIO_MARK'),(localize 'STR_RADIO_OVER')];
 
-			_targetMarked = [_markType,_callsign,_mrkTgt,_grp,_grpType] call TOG_fnc_jtac_Search_Mark; // czeka na oznaczenie i potwierdzenie
+			_targetMarked = [_markType,_callsign,_mrkTgtPos,_grp,_grpType] call TOG_fnc_jtac_Search_Mark; // czeka na oznaczenie i potwierdzenie
 			_tgt = _targetMarked select 0;
 			_isAborted = _targetMarked select 1;
 		} else {
@@ -170,14 +179,15 @@ _waitForMark = {
 
 if (!_isAborted && _isAlive ) then {
 	//TALK
-	leader _grp sideChat format["%1 %2 %3 %4. %5",groupId (group player),(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_ENTERING'),(localize 'STR_RADIO_OVER')];
+	leader _grp sideChat format["%1 %2 %3 %4. %5",[] call TOG_fnc_jtac_operatorGroupId,(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_ENTERING'),(localize 'STR_RADIO_OVER')];
 	// DLA SAMOLOTU
 	if (_typeCas == 1) then {
 		while {!_breakPlanePass} do {
 			//CZEKANIE NA MARK
 			_isMarked = [] call _waitForMark;
 			_tgt = _isMarked select 0;
-			_pos = getPos _tgt;
+			_pos = getPosATL _tgt;
+			if (_markType == 1) then { _pos set [2, 0]; };
 			_isAborted = _isMarked select 1;
 			_isAlive = [_grp,_callsign,_grpType,_typeCas] call TOG_fnc_jtac_ifalive;
 
@@ -185,14 +195,14 @@ if (!_isAborted && _isAlive ) then {
 
 			if (_isAlive && !_isAborted && !isNull _tgt) then {
 				//TALK
-				leader _grp sideChat format["%3 %4. %5",groupId (group player),(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_ENGAGING'),(localize 'STR_RADIO_OUT')];
-				_attack = [_typeCas,_elev,_grp,_mrkTgt,_callsign,_ammoType,_grpType,_markType,_tgt,_alterTgt,_mrkIp,_vehClass,_fireDist,_pos] call TOG_fnc_jtac_CAS_attack_plane;
+				leader _grp sideChat format["%3 %4. %5",[] call TOG_fnc_jtac_operatorGroupId,(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_ENGAGING'),(localize 'STR_RADIO_OUT')];
+				_attack = [_typeCas,_elev,_grp,_mrkTgtPos,_callsign,_ammoType,_grpType,_markType,_tgt,_alterTgt,_mrkIpPos,_vehClass,_fireDist,_pos] call TOG_fnc_jtac_CAS_attack_plane;
 				_isAlive = _attack select 0;
 				_isAborted = _attack select 1;
 			};
 			//koniec ataku
 			if (!isNull _tgt) then {
-				_confirmAfter = [_grp,_callsign,_grpType,_typeCas,_maxPassNumber,_mrkIpPos,_mrkTgt] call TOG_fnc_jtac_break_pass;
+				_confirmAfter = [_grp,_callsign,_grpType,_typeCas,_maxPassNumber,_mrkIpPos,_mrkTgtPos] call TOG_fnc_jtac_break_pass;
 				_breakPlanePass = _confirmAfter;
 				if (!_breakPlanePass) then {_maxPassNumber = _maxPassNumber -1;};
 			} else {
@@ -209,14 +219,15 @@ if (!_isAborted && _isAlive ) then {
 				_isMarked = [] call _waitForMark;
 				_tgt = _isMarked select 0;
 				_isAborted = _isMarked select 1;
-				_pos = getPos _tgt;
+				_pos = getPosATL _tgt;
+			if (_markType == 1) then { _pos set [2, 0]; };
 				_isAlive = [_grp,_callsign,_grpType,_typeCas] call TOG_fnc_jtac_ifalive;
 
 				//atak
 				if (_isAlive && !_isAborted && !isNull _tgt) then {
 					//TALK
-					leader _grp sideChat format["%3 %4. %5",groupId (group player),(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_ENGAGING'),(localize 'STR_RADIO_OUT')];
-					_attack = [_typeCas,_elev,_grp,_mrkTgt,_callsign,_ammoType,_grpType,_markType,_tgt,_alterTgt,_mrkIp,_vehClass,_fireDist,_pos] call TOG_fnc_jtac_CAS_attack_heli;
+					leader _grp sideChat format["%3 %4. %5",[] call TOG_fnc_jtac_operatorGroupId,(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_ENGAGING'),(localize 'STR_RADIO_OUT')];
+					_attack = [_typeCas,_elev,_grp,_mrkTgtPos,_callsign,_ammoType,_grpType,_markType,_tgt,_alterTgt,_mrkIpPos,_vehClass,_fireDist,_pos] call TOG_fnc_jtac_CAS_attack_heli;
 					_isAlive = _attack select 0;
 					_isAborted = _attack select 1;
 				};
@@ -224,7 +235,7 @@ if (!_isAborted && _isAlive ) then {
 				// koniec atak
 
 				if (_ammoType == 1 && !isNull _tgt ) then {
-					_confirmAfter = [_grp,_callsign,_grpType,_typeCas,_maxPassNumber,_mrkIpPos,_mrkTgt] call TOG_fnc_jtac_break_pass;
+					_confirmAfter = [_grp,_callsign,_grpType,_typeCas,_maxPassNumber,_mrkIpPos,_mrkTgtPos] call TOG_fnc_jtac_break_pass;
 					_breakPlanePass = _confirmAfter;
 					if (!_breakPlanePass) then {_maxPassNumber = _maxPassNumber -1;};
 

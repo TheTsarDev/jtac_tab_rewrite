@@ -8,7 +8,7 @@
 //fn_jtac_init_transport
 
 if (isServer) then {
-	waitUntil {TOG_jtac_enable && !TOG_jtac_Trans_Heli_arr_busy};
+	waitUntil { sleep 0.1; TOG_jtac_enable && !TOG_jtac_Trans_Heli_arr_busy };
 	TOG_jtac_Trans_Heli_arr_busy = true;
 };
 /* MODULE VERSION */

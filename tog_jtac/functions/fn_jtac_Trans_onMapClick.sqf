@@ -9,7 +9,7 @@
 
 		_debug = false;
 
-		call TOG_fnc_jtac_Trans_callsign;
+		[false] call TOG_fnc_jtac_Trans_callsign;
 
 		_callsign = TOG_jtac_Trans_callsign;
 		_maxDist = 100;
@@ -37,9 +37,9 @@
 		// TO DO inne Markery
 
 		if (_debug) then {
-			hint format["MRK Ico: %1 \nMRK Color: %2 \nMrk Name: %3 \nSelectPos: %4 \nMapPos %5 \nCallsign: %6, \nSelected: %7 \nDisplay: %8", _mrk_ico, _mrk_color, _mrk_name, TOG_jtac_CAS_selectPos, _pos, _callsign, _selectedCallSign, _callSignList];
+			hint format["MRK Ico: %1 \nMRK Color: %2 \nMrk Name: %3 \nSelectPos: %4 \nMapPos %5 \nCallsign: %6, \nSelected: %7 \nDisplay: %8", _mrk_ico, _mrk_color, _mrk_name, TOG_jtac_Trans_selectPos, _pos, _callsign, _selectedCallSign, _callSignList];
 		};
-		deleteMarker _mrk_name;
+		deleteMarkerLocal _mrk_name;
 		_mrkTxtString = format ["%1 / %2",_mrk_str, _callsign];
 		_mrk = createMarkerLocal [_mrk_name, _pos];
 		_mrk setMarkerTypeLocal _mrk_ico;
@@ -50,7 +50,7 @@
 			case 0: {
 				TOG_jtac_Trans_mrkPick = _mrk;
 				_distMrkName = _mrk_name + "dist";
-				deleteMarker _distMrkName;
+				deleteMarkerLocal _distMrkName;
 				_distMrk = createMarkerLocal [_distMrkName, _pos];
 				_distMrk setMarkerShapeLocal "ELLIPSE";
 				_distMrk setMarkerSizeLocal[_maxDist, _maxDist];
@@ -69,7 +69,7 @@
 
 			if (_distance < _maxDist) then {
 				hint (localize "STR_INFO_LOWDISTANCE");
-				deleteMarker TOG_jtac_Trans_mrkDest;
+				deleteMarkerLocal TOG_jtac_Trans_mrkDest;
 				TOG_jtac_Trans_mrkDest = nil;
 			};
 		};

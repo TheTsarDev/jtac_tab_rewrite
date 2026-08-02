@@ -1,6 +1,6 @@
 # JTAC Tab - Advanced Support Module Re-Write
 
-**Version 1.1.0** · Remastered for Arma 3 · Server & client mod
+**Version 1.6.4** · Remastered for Arma 3 · Server & client mod
 
 Remastered to carry on the work by **LifeReapr**. Original mod by **Sushi** - thank you for building this foundation years ago.
 
@@ -83,17 +83,11 @@ Place and **sync** these modules on the map:
 
 ---
 
-## What's New in 1.1.0
+## What's New in 1.6.3
 
-This release is a **stability update** addressing long-standing script issues:
+Dedicated server scroll-wheel fix — smoke confirm, hit/pass confirm, and heli AT/AP selection now run on the JTAC client and sync back to the server.
 
-- **RTB** - aircraft and helos return and despawn reliably
-- **Rotary CAS** - no more freeze at IP/BP; proper loiter hold
-- **Transport** - GO scroll-wheel action works; no infinite wait on insert
-- **Smoke** - green no longer double-registers as purple
-- **DIRECT runs** - fixed-wing gun passes respect minimum altitude
-
-See [CHANGELOG.md](CHANGELOG.md) for the full breakdown.
+See [CHANGELOG.md](CHANGELOG.md) for full details. Includes all v1.6.0–1.6.2 fixes.
 
 ---
 

@@ -7,17 +7,20 @@
 
 //fn_jtac_CAS_callsign
 
+params [["_delMark", false, [true]]];
+
 _display = uiNamespace getVariable "TOG_jtac_cas_dlg";
+if (isNull _display) exitWith {false};
+
 _callSignList = _display displayCtrl 1004;
 _size = lbSize _callSignList;
 _selectedCallSign = lbCurSel _callSignList;
 _callsign = _callSignList lbText _selectedCallSign;
 _casType = _callSignList lbValue _selectedCallSign;
-_delMark = _this select 0;
 
-if (typeName _delMark != "BOOL" || isNil "_delMark") then {_delMark = false;};
 TOG_jtac_CAS_type = _casType;
 TOG_jtac_CAS_callsign = _callsign;
+
 if (_delMark) then {
 	for [{_i = 0},{_size > _i},{_i = _i + 1}] do {
 		_callsign = _callSignList lbText _i;

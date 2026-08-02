@@ -31,7 +31,7 @@ if ({alive _x} count (units _grp) < 1) exitWith {};
 
 //TALK
 if (!isNil "_callsign") then {
-	leader _grp sideChat format["%1 %2 %3 %4. %5 ",groupId (group player),(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_RTB'),(localize 'STR_RADIO_OUT')];
+	leader _grp sideChat format["%1 %2 %3 %4. %5 ",[] call TOG_fnc_jtac_operatorGroupId,(localize 'STR_RADIO_THISIS'),_callsign,(localize 'STR_RADIO_RTB'),(localize 'STR_RADIO_OUT')];
 };
 
 // Clean up escort if transport mission stored one
@@ -92,6 +92,7 @@ _wp setWaypointCombatMode "BLUE";
 
 _rtbTimeout = time + 600;
 waitUntil {
+	sleep 0.2;
 	({alive _x} count (units _grp) < 1)
 	|| ([leader _grp, waypointPosition _wp] call BIS_fnc_distance2D < 300)
 	|| (time > _rtbTimeout)

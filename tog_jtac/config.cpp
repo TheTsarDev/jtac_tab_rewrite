@@ -1,7 +1,7 @@
 class CfgPatches{
 	class TOG_jtac
 	{
-		version = 1.3;
+		version = 1.6.5;
 		author = "Sushi";
 		units[] = {};
 		requiredVersion = 1.0;
@@ -68,6 +68,18 @@ class CfgFunctions
 			class jtac_remove_wp_all{description = "";};
 			class jtac_break_pass{description = "";};
 			class jtac_openDoor{description = "";};
+			class jtac_execOnOperator{description = "";};
+			class jtac_client_storeAction{description = "";};
+			class jtac_client_removeActions{description = "";};
+			class jtac_client_addSmokeAction{description = "";};
+			class jtac_client_addBreakPassActions{description = "";};
+			class jtac_client_addHeliMissileActions{description = "";};
+			class jtac_server_confirmSmoke{description = "";};
+			class jtac_server_setPassState{description = "";};
+			class jtac_getDirectFireWeapons{description = "";};
+			class jtac_addTabletAction{description = "";};
+			class jtac_getAirSpawnPos{description = "";};
+			class jtac_operatorGroupId{description = "";};
 		};
 	};
 };
